@@ -1,0 +1,16 @@
+#Rename the file name to "application.yml"!
+#Also this should be configured to work.
+
+server:
+  port: YOUR_port
+
+spring:
+  profiles:
+    active: native
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/configurations

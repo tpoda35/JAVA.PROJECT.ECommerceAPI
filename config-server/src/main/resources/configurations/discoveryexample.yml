@@ -1,0 +1,13 @@
+#Rename the file name to "discovery.yml"!
+#Also this should be configured to work.
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: YOUR_defaultZone
+server:
+  port: YOUR_port

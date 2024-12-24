@@ -1,0 +1,21 @@
+#Rename the file name to "gateway.yml"!
+#Also this should be configured to work.
+
+eureka:
+  client:
+    register-with-eureka: false
+server:
+  port: YOUR_port
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: YOUR_id
+          uri: YOUR_uri
+          predicates:
+            - YOUR_path

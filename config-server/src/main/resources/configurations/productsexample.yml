@@ -1,0 +1,25 @@
+#Rename the file name to "products.yml"!
+#Also this should be configured to work.
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: YOUR_defaultZone
+
+server:
+  port: YOUR_port
+spring:
+  application:
+    name: products
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/YOUR_database
+    username: YOUR_username
+    password: YOUR_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect

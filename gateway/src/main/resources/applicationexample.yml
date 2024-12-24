@@ -1,0 +1,8 @@
+#Rename the file name to "application.yml"!
+#Also this should be configured to work.
+
+spring:
+  application:
+    name: gateway
+  config:
+    import: YOUR_configserver

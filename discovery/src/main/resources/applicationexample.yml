@@ -1,0 +1,8 @@
+#Rename the file name to "application.yml"!
+#Also this should be configured to work.
+
+spring:
+  config:
+    import: YOUR_configserver
+  application:
+    name: discovery
