@@ -12,6 +12,8 @@ import java.util.concurrent.CompletableFuture;
 public class InventoryController {
 
     @GetMapping("/{prod-id}")
-    public CompletableFuture<ResponseEntity>
+    public CompletableFuture<ResponseEntity> something(){
+        return null;
+    }
 
 }
