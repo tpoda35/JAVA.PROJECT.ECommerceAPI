@@ -1,13 +1,17 @@
 package com.eCommerce.product.service.impl;
 
+import com.eCommerce.product.dto.ProductDto;
+import com.eCommerce.product.mapper.ProductMapper;
 import com.eCommerce.product.model.Product;
 import com.eCommerce.product.repository.InventoryRepository;
 import com.eCommerce.product.service.InventoryService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -22,8 +26,67 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Async
     @Override
-    public CompletableFuture<Product> getProductById(Long id) {
-        return CompletableFuture.completedFuture(inventoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found.")));
+    public CompletableFuture<List<Product>> getLowStockProducts() {
+        List<Product> lowStock = inventoryRepository.findByStockLessThan(5)
+                .orElseThrow(() -> new EntityNotFoundException("There's no product with low stock(<5)."));
+
+        return CompletableFuture.completedFuture(lowStock);
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<Void> modifyStock(Long id, int newStock) {
+        try {
+            modifyStockTra(id, newStock);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private void modifyStockTra(Long id, int newStock){
+        Product product = inventoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found."));
+
+        product.setStock(newStock);
+        inventoryRepository.save(product);
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<Void> modifyName(Long id, String newName) {
+        try {
+            modifyNameTra(id, newName);
+
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e){
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private void modifyNameTra(Long id, String newName){
+        Product product = inventoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found."));
+
+        product.setName(newName);
+        inventoryRepository.save(product);
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<Product> addProduct(ProductDto productDto) {
+        try {
+            return CompletableFuture.completedFuture(addProductTra(productDto));
+        } catch (Exception e){
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private Product addProductTra(ProductDto productDto){
+        Product product = ProductMapper.INSTANCE.toNormal(productDto);
+        return inventoryRepository.save(product);
     }
 }

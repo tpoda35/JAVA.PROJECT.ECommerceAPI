@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -25,14 +24,15 @@ public class Product {
     @Column(nullable = false, updatable = false)
     private Date addedDate;
 
-    @Column(nullable = false)
     private Date modifiedDate;
 
-    private Long stock;
+    private Integer stock;
 
     @PrePersist
     protected void onCreate(){
         this.addedDate = new Date();
+        this.modifiedDate = new Date();
+        this.stock = 0;
     }
 
     @PreUpdate
@@ -40,4 +40,6 @@ public class Product {
         this.modifiedDate = new Date();
     }
 
+    @Version
+    private Integer Version;
 }
