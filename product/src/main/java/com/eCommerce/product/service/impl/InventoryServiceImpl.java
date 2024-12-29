@@ -8,6 +8,9 @@ import com.eCommerce.product.service.InventoryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
+    @Cacheable(value = "low-stock")
     @Override
     public CompletableFuture<List<Product>> getLowStockProducts() {
         List<Product> lowStock = inventoryRepository.findByStockLessThan(5)
@@ -34,6 +38,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
+    @CacheEvict(value = "low-stock", allEntries = true)
     @Override
     public CompletableFuture<Void> modifyStock(Long id, int newStock) {
         try {
@@ -54,6 +59,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
+    @CacheEvict(value = "low-stock", allEntries = true)
     @Override
     public CompletableFuture<Void> modifyName(Long id, String newName) {
         try {

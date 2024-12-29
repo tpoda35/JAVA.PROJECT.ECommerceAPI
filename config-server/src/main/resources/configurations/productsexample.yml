@@ -13,6 +13,12 @@ server:
 spring:
   application:
     name: products
+  cache:
+    type: redis
+    redis:
+      host: YOUR_host
+      port: YOUR_port
+      cache-null-values: true
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/YOUR_database
