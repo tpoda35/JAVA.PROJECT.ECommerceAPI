@@ -50,7 +50,10 @@ public class InventoryController {
                 id, modifyDto.newStock());
 
         return inventoryService.modifyStock(id, modifyDto.newStock())
-                .thenApply(result -> ResponseEntity.noContent().build());
+                .thenApply(result -> {
+                    logger.info("A product stock has been modified.");
+                    return ResponseEntity.noContent().build();
+                });
     }
 
     //Modifies the given product name.
@@ -63,7 +66,10 @@ public class InventoryController {
                 id, modifyDto.name());
 
         return inventoryService.modifyName(id, modifyDto.name())
-                .thenApply(result -> ResponseEntity.noContent().build());
+                .thenApply(result -> {
+                    logger.info("A product name has been modified.");
+                    return ResponseEntity.noContent().build();
+                });
     }
 
     @PostMapping("/add")
@@ -75,8 +81,11 @@ public class InventoryController {
 
         return inventoryService.addProduct(productDto)
                 .thenApply(product ->
-                        ResponseEntity.created(URI.create("/inventory/" + product.getId()))
-                                .body(product));
+                {
+                    logger.info("A product has been added with the id of {}.", product.getId());
+                    return ResponseEntity.created(URI.create("/inventory/" + product.getId()))
+                            .body(product);
+                });
     }
 
 }
