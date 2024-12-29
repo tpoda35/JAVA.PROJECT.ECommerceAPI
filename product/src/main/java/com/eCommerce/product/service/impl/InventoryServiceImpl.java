@@ -9,7 +9,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -38,9 +37,10 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
-    @CacheEvict(value = "low-stock", allEntries = true)
+    @CacheEvict(value = "low-stock",
+            allEntries = true) // Later add some conditions with SpEL.
     @Override
-    public CompletableFuture<Void> modifyStock(Long id, int newStock) {
+    public CompletableFuture<Void> modifyProductStock(Long id, int newStock) {
         try {
             modifyStockTra(id, newStock);
             return CompletableFuture.completedFuture(null);
@@ -59,9 +59,10 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
-    @CacheEvict(value = "low-stock", allEntries = true)
+    @CacheEvict(value = "low-stock",
+            allEntries = true) // Later add some conditions with SpEL.
     @Override
-    public CompletableFuture<Void> modifyName(Long id, String newName) {
+    public CompletableFuture<Void> modifyProductName(Long id, String newName) {
         try {
             modifyNameTra(id, newName);
 
@@ -81,6 +82,8 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
+    @CacheEvict(value = "low-stock",
+            allEntries = true) // Later add some conditions with SpEL.
     @Override
     public CompletableFuture<Product> addProduct(ProductDto productDto) {
         try {
@@ -94,5 +97,25 @@ public class InventoryServiceImpl implements InventoryService {
     private Product addProductTra(ProductDto productDto){
         Product product = ProductMapper.INSTANCE.toNormal(productDto);
         return inventoryRepository.save(product);
+    }
+
+    @Async
+    @CacheEvict(value = "low-stock",
+            allEntries = true) // Later add some conditions with SpEL.
+    @Override
+    public CompletableFuture<Void> deleteProduct(Long id) {
+        try {
+            deleteProductTra(id);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e){
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private void deleteProductTra(Long id){
+        Product product = inventoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found."));
+        inventoryRepository.delete(product);
     }
 }

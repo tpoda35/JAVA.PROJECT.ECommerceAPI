@@ -29,6 +29,9 @@ public class Product implements Serializable {
 
     private Integer stock;
 
+    @Column(nullable = false)
+    private Long categoryId;
+
     @PrePersist
     protected void onCreate(){
         this.addedDate = new Date();

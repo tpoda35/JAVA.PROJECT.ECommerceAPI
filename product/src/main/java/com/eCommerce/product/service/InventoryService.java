@@ -8,7 +8,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface InventoryService {
     CompletableFuture<List<Product>> getLowStockProducts();
-    CompletableFuture<Void> modifyStock(Long id, int newStock);
-    CompletableFuture<Void> modifyName(Long id, String newName);
+    CompletableFuture<Void> modifyProductStock(Long id, int newStock);
+    CompletableFuture<Void> modifyProductName(Long id, String newName);
     CompletableFuture<Product> addProduct(ProductDto productDto);
+    CompletableFuture<Void> deleteProduct(Long id);
 }

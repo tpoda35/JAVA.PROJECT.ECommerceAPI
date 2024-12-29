@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public class CategoryController {
 
     @GetMapping("/all")
-    public CompletableFuture<Category> getAll(){
+    public CompletableFuture<Category> getAllCategory(){
         return null;
     }
 

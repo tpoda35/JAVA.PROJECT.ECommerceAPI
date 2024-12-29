@@ -49,7 +49,7 @@ public class InventoryController {
         logger.info("Received request to /inventory/modify-stock/prod-id with the id: {}, and stock: {}",
                 id, modifyDto.newStock());
 
-        return inventoryService.modifyStock(id, modifyDto.newStock())
+        return inventoryService.modifyProductStock(id, modifyDto.newStock())
                 .thenApply(result -> {
                     logger.info("A product stock has been modified.");
                     return ResponseEntity.noContent().build();
@@ -65,7 +65,7 @@ public class InventoryController {
         logger.info("Received request to /inventory/modify-name/prod-id with the id: {}, and name: {}",
                 id, modifyDto.name());
 
-        return inventoryService.modifyName(id, modifyDto.name())
+        return inventoryService.modifyProductName(id, modifyDto.name())
                 .thenApply(result -> {
                     logger.info("A product name has been modified.");
                     return ResponseEntity.noContent().build();
@@ -86,6 +86,14 @@ public class InventoryController {
                     return ResponseEntity.created(URI.create("/inventory/" + product.getId()))
                             .body(product);
                 });
+    }
+
+    @DeleteMapping("/delete")
+    public CompletableFuture<ResponseEntity<Void>> deleteProduct(
+            @PathVariable Long id,
+            @RequestBody ModifyDto modifyDto
+    ){
+        return null; // This will be implemented soon.
     }
 
 }
