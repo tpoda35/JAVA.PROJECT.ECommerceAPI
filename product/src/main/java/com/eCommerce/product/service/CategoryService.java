@@ -13,5 +13,5 @@ public interface CategoryService {
     CompletableFuture<Category> addCategory(CategoryDto categoryDto);
     CompletableFuture<Void> modifyName(Long id, ModifyDto modifyDto);
     CompletableFuture<Void> modifyDescription(Long id, ModifyDto modifyDto);
-    CompletableFuture<Void> deleteCategory();
+    CompletableFuture<Void> deleteCategory(Long id);
 }

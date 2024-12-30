@@ -30,8 +30,13 @@ public class InventoryServiceImpl implements InventoryService {
     @Cacheable(value = "low-stock")
     @Override
     public CompletableFuture<List<Product>> getLowStockProducts() {
-        List<Product> lowStock = inventoryRepository.findByStockLessThan(5)
-                .orElseThrow(() -> new EntityNotFoundException("There's no product with low stock(<5)."));
+        List<Product> lowStock = inventoryRepository.findByStockLessThan(5);
+
+        if (lowStock.isEmpty()){
+            return CompletableFuture.failedFuture(
+                    new EntityNotFoundException("There's no low stock product found.")
+            );
+        }
 
         return CompletableFuture.completedFuture(lowStock);
     }

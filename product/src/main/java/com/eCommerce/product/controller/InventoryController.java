@@ -72,6 +72,7 @@ public class InventoryController {
                 });
     }
 
+    //Adds a new product to the database.
     @PostMapping("/add")
     public CompletableFuture<ResponseEntity<Product>> addProduct(
             @RequestBody @Valid ProductDto productDto
@@ -88,12 +89,18 @@ public class InventoryController {
                 });
     }
 
-    @DeleteMapping("/delete")
+    //Deletes the product from the database.
+    @DeleteMapping("/delete/{prod-id}")
     public CompletableFuture<ResponseEntity<Void>> deleteProduct(
-            @PathVariable Long id,
-            @RequestBody ModifyDto modifyDto
+            @PathVariable("prod-id") Long id
     ){
-        return null; // This will be implemented soon.
-    }
+        logger.info("Received request to /inventory/delete with the id: {}",
+                id);
 
+        return inventoryService.deleteProduct(id)
+                .thenApply(result -> {
+                    logger.info("A product has been deleted with the id of {}.", id);
+                    return ResponseEntity.noContent().build();
+                });
+    }
 }
