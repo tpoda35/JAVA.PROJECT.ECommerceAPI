@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -49,11 +50,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Cacheable(value = "category", key = "#id")
     @Override
     public CompletableFuture<Category> getCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found."));
-        logger.info("Category found with the name of {}, and id of {}.", category.getName(), id);
+        // If .orElseThrow is used, itt will return internal server error, not 404 not found.
+        Optional<Category> category = categoryRepository.findById(id);
+        if (category.isEmpty()){
+            return CompletableFuture.failedFuture(
+                    new EntityNotFoundException("Category not found.")
+            );
+        }
+        Category cat = category.get();
+        logger.info("Category found with the name of {}, and id of {}.", cat.getName(), id);
 
-        return CompletableFuture.completedFuture(category);
+        return CompletableFuture.completedFuture(cat);
     }
 
     @Override
