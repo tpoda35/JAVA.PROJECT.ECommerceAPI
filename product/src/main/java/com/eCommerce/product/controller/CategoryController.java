@@ -2,7 +2,9 @@ package com.eCommerce.product.controller;
 
 import com.eCommerce.product.dto.CategoryDto;
 import com.eCommerce.product.model.Category;
+import com.eCommerce.product.model.Product;
 import com.eCommerce.product.service.CategoryService;
+import com.eCommerce.product.service.InventoryService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +23,12 @@ public class CategoryController {
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     private final CategoryService categoryService;
+    private final InventoryService inventoryService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, InventoryService inventoryService) {
         this.categoryService = categoryService;
+        this.inventoryService = inventoryService;
     }
 
     @GetMapping("/all")
@@ -33,7 +37,7 @@ public class CategoryController {
 
         return categoryService.getAllCategory()
                 .thenApply(categories -> {
-                    logger.info("Received {} categories back from /inventory/low-stock.", categories.size());
+                    logger.info("Received {} categories back from /category/all.", categories.size());
                     return categories;
                 });
     }
@@ -58,6 +62,19 @@ public class CategoryController {
                     logger.info("A category has been added with the id of {}.", category.getId());
                     return ResponseEntity.created(URI.create("/category/" + category.getId()))
                             .body(category);
+                });
+    }
+
+    @GetMapping("/{cat-id}/all")
+    public CompletableFuture<List<Product>> getAllProductByCategory(
+            @PathVariable("cat-id") Long categoryId
+    ){
+        logger.info("Received request to /category/{cat-id/all with the id of {}.", categoryId);
+
+        return inventoryService.getAllProductByCategory(categoryId)
+                .thenApply(products -> {
+                    logger.info("Received {} categories back from /inventory/low-stock.", products.size());
+                    return products;
                 });
     }
 

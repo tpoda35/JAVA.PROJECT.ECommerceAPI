@@ -4,7 +4,6 @@ import com.eCommerce.product.dto.CategoryDto;
 import com.eCommerce.product.dto.ModifyDto;
 import com.eCommerce.product.mapper.CategoryMapper;
 import com.eCommerce.product.model.Category;
-import com.eCommerce.product.model.Product;
 import com.eCommerce.product.repository.CategoryRepository;
 import com.eCommerce.product.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
@@ -48,11 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
         return CompletableFuture.failedFuture(
                 new EntityNotFoundException("There's no category found.")
         );
-    }
-
-    @Override
-    public CompletableFuture<List<Product>> getAllProductByCategory(Long categoryId) {
-        return null;
     }
 
     @Async

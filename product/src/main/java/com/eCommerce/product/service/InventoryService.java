@@ -12,4 +12,5 @@ public interface InventoryService {
     CompletableFuture<Void> modifyProductName(Long id, String newName);
     CompletableFuture<Product> addProduct(ProductDto productDto);
     CompletableFuture<Void> deleteProduct(Long id);
+    CompletableFuture<List<Product>> getAllProductByCategory(Long categoryId);
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -98,8 +99,10 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
-    @CacheEvict(value = "low-stock",
-            allEntries = true) // Later add some conditions with SpEL.
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "low-stock", allEntries = true),
+            @CacheEvict(cacheNames = "prodByCat", key = "#productDto.categoryId")
+    })
     @Override
     public CompletableFuture<Product> addProduct(ProductDto productDto) {
         try {
@@ -116,6 +119,8 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.save(product);
     }
 
+    // The cache not working. Will be modified.
+    // The "prodByCat" cache is not working as expected.
     @Async
     @CacheEvict(value = "low-stock",
             allEntries = true) // Later add some conditions with SpEL.
@@ -133,8 +138,25 @@ public class InventoryServiceImpl implements InventoryService {
     private void deleteProductTra(Long id){
         Product product = inventoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
-        logger.info("Deleting the product with the id of {}", id);
+        logger.info("Deleting the product with the id of {}.", id);
 
         inventoryRepository.delete(product);
+    }
+
+    @Async
+    @Cacheable(value = "prodByCat", key = "#categoryId")
+    @Override
+    public CompletableFuture<List<Product>> getAllProductByCategory(Long categoryId) {
+        List<Product> products = inventoryRepository.findAllByCategoryId(categoryId);
+
+        if (!products.isEmpty()){
+            logger.info("Found {} product with the categoryId of {}.", products.size(), categoryId);
+            return CompletableFuture.completedFuture(products);
+        }
+
+        logger.info("Found 0 product with the categoryId of {}.", categoryId);
+        return CompletableFuture.failedFuture(
+                new EntityNotFoundException("There's no product found with the categoryId of " + categoryId)
+        );
     }
 }

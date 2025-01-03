@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface InventoryRepository extends JpaRepository<Product, Long> {
     List<Product> findByStockLessThan(Integer lowStockNum);
+    List<Product> findAllByCategoryId(Long categoryId);
 }
