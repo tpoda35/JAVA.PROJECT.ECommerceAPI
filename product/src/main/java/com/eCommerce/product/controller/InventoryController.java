@@ -78,7 +78,7 @@ public class InventoryController {
             @RequestBody @Valid ProductDto productDto
     ) {
         logger.info("Received request to /inventory/add with the data: {}",
-                productDto);
+                productDto.toString());
 
         return inventoryService.addProduct(productDto)
                 .thenApply(product ->

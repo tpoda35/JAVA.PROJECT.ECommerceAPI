@@ -2,13 +2,17 @@ package com.eCommerce.product.service.impl;
 
 import com.eCommerce.product.dto.CategoryDto;
 import com.eCommerce.product.dto.ModifyDto;
+import com.eCommerce.product.mapper.CategoryMapper;
 import com.eCommerce.product.model.Category;
+import com.eCommerce.product.model.Product;
 import com.eCommerce.product.repository.CategoryRepository;
 import com.eCommerce.product.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,6 +50,11 @@ public class CategoryServiceImpl implements CategoryService {
         );
     }
 
+    @Override
+    public CompletableFuture<List<Product>> getAllProductByCategory(Long categoryId) {
+        return null;
+    }
+
     @Async
     @Cacheable(value = "category", key = "#id")
     @Override
@@ -63,9 +72,25 @@ public class CategoryServiceImpl implements CategoryService {
         return CompletableFuture.completedFuture(cat);
     }
 
+    @Async
+    @CacheEvict(
+            value = "categories",
+            allEntries = true
+    )
     @Override
     public CompletableFuture<Category> addCategory(CategoryDto categoryDto) {
-        return null;
+        try {
+            return CompletableFuture.completedFuture(addCategoryTra(categoryDto));
+        } catch (Exception e){
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private Category addCategoryTra(CategoryDto categoryDto){
+        logger.info("Adding product with the data of: {}", categoryDto.toString());
+        Category category = CategoryMapper.INSTANCE.toNormal(categoryDto);
+        return categoryRepository.save(category);
     }
 
     @Override

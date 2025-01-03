@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,7 +50,15 @@ public class CategoryController {
     public CompletableFuture<ResponseEntity<Category>> addCategory(
             @RequestBody @Valid CategoryDto categoryDto
             ){
-        return null;
+        logger.info("Received request to /category/add with the data: {}",
+                categoryDto.toString());
+
+        return categoryService.addCategory(categoryDto)
+                .thenApply(category -> {
+                    logger.info("A category has been added with the id of {}.", category.getId());
+                    return ResponseEntity.created(URI.create("/category/" + category.getId()))
+                            .body(category);
+                });
     }
 
 }

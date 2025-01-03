@@ -10,7 +10,6 @@ public interface ProductMapper {
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    ProductDto toDto(Product product);
     Product toNormal(ProductDto productDto);
 
 }

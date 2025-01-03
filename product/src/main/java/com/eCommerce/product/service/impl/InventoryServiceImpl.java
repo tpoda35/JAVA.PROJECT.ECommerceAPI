@@ -103,7 +103,6 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public CompletableFuture<Product> addProduct(ProductDto productDto) {
         try {
-
             return CompletableFuture.completedFuture(addProductTra(productDto));
         } catch (Exception e){
             return CompletableFuture.failedFuture(e);
