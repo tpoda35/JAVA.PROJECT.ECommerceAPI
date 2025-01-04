@@ -48,13 +48,14 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Async
-    @CacheEvict(value = "low-stock",
-            allEntries = true) // Later add some conditions with SpEL.
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "low-stock", allEntries = true),
+            @CacheEvict(cacheNames = "prodByCat", key = "#result.categoryId")
+    })
     @Override
-    public CompletableFuture<Void> modifyProductStock(Long id, int newStock) {
+    public CompletableFuture<ProductDto> modifyProductStock(Long id, int newStock) {
         try {
-            modifyStockTra(id, newStock);
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(modifyStockTra(id, newStock));
         } catch (Exception e) {
             logger.error("Unexpected error during modifyProductStock: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
@@ -62,7 +63,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Transactional
-    private void modifyStockTra(Long id, int newStock){
+    private ProductDto modifyStockTra(Long id, int newStock){
         if (newStock < 0){
             throw new IllegalArgumentException("Stock cannot be negative.");
         }
@@ -72,12 +73,14 @@ public class InventoryServiceImpl implements InventoryService {
         logger.info("Modifying the stock of the product with the id of {}", product.getId());
 
         product.setStock(newStock);
-        inventoryRepository.save(product);
+        return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
     }
 
     @Async
-    @CacheEvict(value = "low-stock",
-            allEntries = true) // Later add some conditions with SpEL.
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "low-stock", allEntries = true),
+            @CacheEvict(cacheNames = "prodByCat", key = "#id")
+    })
     @Override
     public CompletableFuture<Void> modifyProductName(Long id, String newName) {
         try {
@@ -123,7 +126,7 @@ public class InventoryServiceImpl implements InventoryService {
     // The "prodByCat" cache is not working as expected.
     @Async
     @CacheEvict(value = "low-stock",
-            allEntries = true) // Later add some conditions with SpEL.
+            allEntries = true)
     @Override
     public CompletableFuture<Void> deleteProduct(Long id) {
         try {
@@ -158,5 +161,23 @@ public class InventoryServiceImpl implements InventoryService {
         return CompletableFuture.failedFuture(
                 new EntityNotFoundException("There's no product found with the categoryId of " + categoryId)
         );
+    }
+
+    @Async
+    @Caching(evict = {
+            @CacheEvict(
+                    cacheNames = "low-stock",
+                    allEntries = true,
+                    condition = "#result != null && #result.stock < 5"
+            ),
+            @CacheEvict(
+                    cacheNames = "prodByCat",
+                    key = "#result.categoryId",
+                    condition = "#result != null"
+            )
+    })
+    @Override
+    public CompletableFuture<Product> modifyProductCatId(Long productId) {
+        return null;
     }
 }

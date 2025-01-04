@@ -11,5 +11,6 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     Product toNormal(ProductDto productDto);
+    ProductDto toDto(Product product);
 
 }
