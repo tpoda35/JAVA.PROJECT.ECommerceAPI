@@ -76,29 +76,29 @@ public class InventoryServiceImpl implements InventoryService {
         return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
     }
 
+    // Controller not modified.
     @Async
     @Caching(evict = {
             @CacheEvict(cacheNames = "low-stock", allEntries = true),
-            @CacheEvict(cacheNames = "prodByCat", key = "#id")
+            @CacheEvict(cacheNames = "prodByCat", key = "#result.categoryId")
     })
     @Override
-    public CompletableFuture<Void> modifyProductName(Long id, String newName) {
+    public CompletableFuture<ProductDto> modifyProductName(Long id, String newName) {
         try {
-            modifyNameTra(id, newName);
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(modifyNameTra(id, newName));
         } catch (Exception e){
             return CompletableFuture.failedFuture(e);
         }
     }
 
     @Transactional
-    private void modifyNameTra(Long id, String newName){
+    private ProductDto modifyNameTra(Long id, String newName){
         Product product = inventoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
         logger.info("Modifying the name of the product with the id of {}", product.getId());
 
         product.setName(newName);
-        inventoryRepository.save(product);
+        return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
     }
 
     @Async

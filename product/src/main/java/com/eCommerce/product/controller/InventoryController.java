@@ -45,7 +45,7 @@ public class InventoryController {
     @PatchMapping("/modify-stock/{prod-id}")
     public CompletableFuture<ProductDto> modifyStock(
             @PathVariable("prod-id") Long id,
-            @RequestBody ModifyDto modifyDto
+            @RequestBody ModifyDto modifyDto // This will change.
             ){
         logger.info("Received request to /inventory/modify-stock/prod-id with the id: {}, and stock: {}",
                 id, modifyDto.newStock());
@@ -61,7 +61,7 @@ public class InventoryController {
     @PatchMapping("/modify-name/{prod-id}")
     public CompletableFuture<ResponseEntity<Void>> modifyName(
             @PathVariable("prod-id") Long id,
-            @RequestBody ModifyDto modifyDto
+            @RequestBody ModifyDto modifyDto // This will change.
     ){
         logger.info("Received request to /inventory/modify-name/prod-id with the id: {}, and name: {}",
                 id, modifyDto.name());
