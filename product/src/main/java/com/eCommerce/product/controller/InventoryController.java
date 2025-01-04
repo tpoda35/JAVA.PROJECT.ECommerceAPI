@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +43,7 @@ public class InventoryController {
 
     //Modifies the given product stock.
     @PatchMapping("/modify-stock/{prod-id}")
-    public CompletableFuture<ResponseEntity<Void>> modifyStock(
+    public CompletableFuture<ProductDto> modifyStock(
             @PathVariable("prod-id") Long id,
             @RequestBody ModifyDto modifyDto
             ){
@@ -52,7 +53,7 @@ public class InventoryController {
         return inventoryService.modifyProductStock(id, modifyDto.newStock())
                 .thenApply(result -> {
                     logger.info("A product stock has been modified.");
-                    return ResponseEntity.noContent().build();
+                    return result;
                 });
     }
 
