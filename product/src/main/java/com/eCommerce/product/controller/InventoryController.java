@@ -1,5 +1,6 @@
 package com.eCommerce.product.controller;
 
+import com.eCommerce.product.dto.ModifyIdDto;
 import com.eCommerce.product.dto.ModifyNameDto;
 import com.eCommerce.product.dto.ModifyStockDto;
 import com.eCommerce.product.dto.ProductDto;
@@ -45,12 +46,12 @@ public class InventoryController {
     @PatchMapping("/modify-stock/{prod-id}")
     public CompletableFuture<ProductDto> modifyStock(
             @PathVariable("prod-id") Long id,
-            @RequestBody ModifyStockDto modifyDto
+            @RequestBody @Valid ModifyStockDto modifyDto
             ){
         logger.info("Received request to /inventory/modify-stock/prod-id with the id: {}, and stock: {}",
-                id, modifyDto.newStock());
+                id, modifyDto.num());
 
-        return inventoryService.modifyProductStock(id, modifyDto.newStock())
+        return inventoryService.modifyProductStock(id, modifyDto.num())
                 .thenApply(result -> {
                     logger.info("A product stock has been modified.");
                     return result;
@@ -61,7 +62,7 @@ public class InventoryController {
     @PatchMapping("/modify-name/{prod-id}")
     public CompletableFuture<ProductDto> modifyName(
             @PathVariable("prod-id") Long id,
-            @RequestBody ModifyNameDto modifyDto
+            @RequestBody @Valid ModifyNameDto modifyDto
     ){
         logger.info("Received request to /inventory/modify-name/prod-id with the id: {}, and name: {}",
                 id, modifyDto.name());
@@ -102,6 +103,21 @@ public class InventoryController {
                 .thenApply(result -> {
                     logger.info("A product has been deleted with the id of {}.", id);
                     return ResponseEntity.noContent().build();
+                });
+    }
+
+    @PatchMapping("/modifyProductCatId/{prod-id}")
+    public CompletableFuture<ProductDto> modifyProductCatId(
+            @PathVariable("prod-id") Long id,
+            @RequestBody @Valid ModifyIdDto modifyDto
+    ){
+        logger.info("Received request to /inventory/modifyProductCatId/{prod-id} with the id: {}",
+                id);
+
+        return inventoryService.modifyProductCatId(id, modifyDto.id())
+                .thenApply( productDto -> {
+                    logger.info("A product categoryId with the id of {} has been modified.", id);
+                    return productDto;
                 });
     }
 }
