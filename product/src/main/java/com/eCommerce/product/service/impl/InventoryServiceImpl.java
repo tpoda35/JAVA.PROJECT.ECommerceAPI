@@ -81,8 +81,15 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Async
     @Caching(evict = {
-            @CacheEvict(cacheNames = "low-stock", allEntries = true),
-            @CacheEvict(cacheNames = "prodByCat", key = "#result.categoryId")
+            @CacheEvict(
+                    cacheNames = "low-stock",
+                    allEntries = true
+            ),
+            @CacheEvict(
+                    cacheNames = "prodByCat",
+                    key = "#result.categoryId",
+                    condition = "#result != null"
+            )
     })
     @Override
     public CompletableFuture<ProductDto> modifyProductName(Long id, String newName) {
@@ -184,7 +191,22 @@ public class InventoryServiceImpl implements InventoryService {
             )
     })
     @Override
-    public CompletableFuture<Product> modifyProductCatId(Long productId) {
-        return null;
+    public CompletableFuture<ProductDto> modifyProductCatId(Long productId, Long newId) {
+        try {
+            return CompletableFuture.completedFuture(modifyProductCatIdTra(productId, newId));
+        } catch (Exception e){
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private ProductDto modifyProductCatIdTra(Long productId, Long newId){
+        Product product = inventoryRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found."));
+        logger.info("Modifying categoryId({}) of the product with the id of {}.",
+                product.getCategoryId(), productId);
+
+        product.setCategoryId(newId);
+        return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
     }
 }
