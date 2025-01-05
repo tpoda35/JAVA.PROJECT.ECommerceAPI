@@ -1,7 +1,8 @@
 package com.eCommerce.product.service.impl;
 
 import com.eCommerce.product.dto.CategoryDto;
-import com.eCommerce.product.dto.ModifyDto;
+import com.eCommerce.product.dto.ModifyDescriptionDto;
+import com.eCommerce.product.dto.ModifyNameDto;
 import com.eCommerce.product.mapper.CategoryMapper;
 import com.eCommerce.product.model.Category;
 import com.eCommerce.product.repository.CategoryRepository;
@@ -88,12 +89,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CompletableFuture<Void> modifyName(Long id, ModifyDto modifyDto) {
+    public CompletableFuture<Void> modifyName(Long id, ModifyNameDto modifyDto) {
         return null;
     }
 
     @Override
-    public CompletableFuture<Void> modifyDescription(Long id, ModifyDto modifyDto) {
+    public CompletableFuture<Void> modifyDescription(Long id, ModifyDescriptionDto modifyDto) {
         return null;
     }
 

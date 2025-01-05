@@ -1,6 +1,7 @@
 package com.eCommerce.product.controller;
 
-import com.eCommerce.product.dto.ModifyDto;
+import com.eCommerce.product.dto.ModifyNameDto;
+import com.eCommerce.product.dto.ModifyStockDto;
 import com.eCommerce.product.dto.ProductDto;
 import com.eCommerce.product.model.Product;
 import com.eCommerce.product.service.InventoryService;
@@ -8,7 +9,6 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +45,7 @@ public class InventoryController {
     @PatchMapping("/modify-stock/{prod-id}")
     public CompletableFuture<ProductDto> modifyStock(
             @PathVariable("prod-id") Long id,
-            @RequestBody ModifyDto modifyDto // This will change.
+            @RequestBody ModifyStockDto modifyDto
             ){
         logger.info("Received request to /inventory/modify-stock/prod-id with the id: {}, and stock: {}",
                 id, modifyDto.newStock());
@@ -61,7 +61,7 @@ public class InventoryController {
     @PatchMapping("/modify-name/{prod-id}")
     public CompletableFuture<ProductDto> modifyName(
             @PathVariable("prod-id") Long id,
-            @RequestBody ModifyDto modifyDto // This will change.
+            @RequestBody ModifyNameDto modifyDto
     ){
         logger.info("Received request to /inventory/modify-name/prod-id with the id: {}, and name: {}",
                 id, modifyDto.name());
