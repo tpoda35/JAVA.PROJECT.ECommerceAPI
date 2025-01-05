@@ -36,7 +36,9 @@ public class Product implements Serializable {
     protected void onCreate(){
         this.addedDate = new Date();
         this.modifiedDate = new Date();
-        this.stock = 0;
+        if (stock == null){
+            this.stock = 0;
+        }
     }
 
     @PreUpdate

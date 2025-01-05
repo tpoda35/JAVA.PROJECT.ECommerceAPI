@@ -59,7 +59,7 @@ public class InventoryController {
 
     //Modifies the given product name.
     @PatchMapping("/modify-name/{prod-id}")
-    public CompletableFuture<ResponseEntity<Void>> modifyName(
+    public CompletableFuture<ProductDto> modifyName(
             @PathVariable("prod-id") Long id,
             @RequestBody ModifyDto modifyDto // This will change.
     ){
@@ -67,9 +67,9 @@ public class InventoryController {
                 id, modifyDto.name());
 
         return inventoryService.modifyProductName(id, modifyDto.name())
-                .thenApply(result -> {
-                    logger.info("A product name has been modified.");
-                    return ResponseEntity.noContent().build();
+                .thenApply(productDto -> {
+                    logger.info("A product name with the id of {} has been modified.", id);
+                    return productDto;
                 });
     }
 

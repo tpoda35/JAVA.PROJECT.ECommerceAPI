@@ -5,6 +5,7 @@ import com.eCommerce.product.mapper.ProductMapper;
 import com.eCommerce.product.model.Product;
 import com.eCommerce.product.repository.InventoryRepository;
 import com.eCommerce.product.service.InventoryService;
+import com.eCommerce.product.util.CacheEvictionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ import java.util.concurrent.CompletableFuture;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
+    private final CacheEvictionUtil cacheEvictionUtil;
     private static final Logger logger = LoggerFactory.getLogger(InventoryServiceImpl.class);
 
     @Autowired
-    public InventoryServiceImpl(InventoryRepository inventoryRepository) {
+    public InventoryServiceImpl(InventoryRepository inventoryRepository, CacheEvictionUtil cacheEvictionUtil) {
         this.inventoryRepository = inventoryRepository;
+        this.cacheEvictionUtil = cacheEvictionUtil;
     }
 
     @Async
@@ -76,7 +79,6 @@ public class InventoryServiceImpl implements InventoryService {
         return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
     }
 
-    // Controller not modified.
     @Async
     @Caching(evict = {
             @CacheEvict(cacheNames = "low-stock", allEntries = true),
@@ -103,8 +105,14 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Async
     @Caching(evict = {
-            @CacheEvict(cacheNames = "low-stock", allEntries = true),
-            @CacheEvict(cacheNames = "prodByCat", key = "#productDto.categoryId")
+            @CacheEvict(
+                    cacheNames = "low-stock",
+                    allEntries = true,
+                    condition = "#productDto.stock < 5"
+            ),
+            @CacheEvict(
+                    cacheNames = "prodByCat",
+                    key = "#productDto.categoryId")
     })
     @Override
     public CompletableFuture<Product> addProduct(ProductDto productDto) {
@@ -122,8 +130,6 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.save(product);
     }
 
-    // The cache not working. Will be modified.
-    // The "prodByCat" cache is not working as expected.
     @Async
     @CacheEvict(value = "low-stock",
             allEntries = true)
@@ -143,6 +149,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
         logger.info("Deleting the product with the id of {}.", id);
 
+        cacheEvictionUtil.evictCacheByCategory(product.getCategoryId());
         inventoryRepository.delete(product);
     }
 
