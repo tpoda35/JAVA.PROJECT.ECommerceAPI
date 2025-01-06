@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -83,14 +84,41 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     private Category addCategoryTra(CategoryDto categoryDto){
-        logger.info("Adding product with the data of: {}", categoryDto.toString());
+        logger.info("Adding category with the data of: {}", categoryDto.toString());
         Category category = CategoryMapper.INSTANCE.toNormal(categoryDto);
         return categoryRepository.save(category);
     }
 
+    @Async
+    @Caching(evict = {
+            @CacheEvict(
+                    cacheNames = "categories",
+                    allEntries = true,
+                    condition = "#result != null"
+            ),
+            @CacheEvict(
+                    cacheNames = "category",
+                    key = "#id",
+                    condition = "#result != null"
+            )
+    })
     @Override
-    public CompletableFuture<Void> modifyName(Long id, ModifyNameDto modifyDto) {
-        return null;
+    public CompletableFuture<CategoryDto> modifyName(Long id, ModifyNameDto modifyDto) {
+        try{
+            return CompletableFuture.completedFuture(modifyNameTra(id, modifyDto));
+        } catch (Exception e){
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private CategoryDto modifyNameTra(Long id, ModifyNameDto modifyDto){
+        logger.info("Modifying category(id:{}) name to: {}", id, modifyDto.name());
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category with the id of " + id + "not found"));
+
+        category.setName(modifyDto.name());
+        return CategoryMapper.INSTANCE.toDto(categoryRepository.save(category));
     }
 
     @Override

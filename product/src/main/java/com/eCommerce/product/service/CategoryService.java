@@ -12,7 +12,7 @@ public interface CategoryService {
     CompletableFuture<List<Category>> getAllCategory();
     CompletableFuture<Category> getCategory(Long id);
     CompletableFuture<Category> addCategory(CategoryDto categoryDto);
-    CompletableFuture<Void> modifyName(Long id, ModifyNameDto modifyDto);
+    CompletableFuture<CategoryDto> modifyName(Long id, ModifyNameDto modifyDto);
     CompletableFuture<Void> modifyDescription(Long id, ModifyDescriptionDto modifyDto);
     CompletableFuture<Void> deleteCategory(Long id);
 }

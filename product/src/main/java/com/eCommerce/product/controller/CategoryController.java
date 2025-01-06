@@ -1,6 +1,7 @@
 package com.eCommerce.product.controller;
 
 import com.eCommerce.product.dto.CategoryDto;
+import com.eCommerce.product.dto.ModifyNameDto;
 import com.eCommerce.product.model.Category;
 import com.eCommerce.product.model.Product;
 import com.eCommerce.product.service.CategoryService;
@@ -69,12 +70,26 @@ public class CategoryController {
     public CompletableFuture<List<Product>> getAllProductByCategory(
             @PathVariable("cat-id") Long categoryId
     ){
-        logger.info("Received request to /category/{cat-id/all with the id of {}.", categoryId);
+        logger.info("Received request to /category/{cat-id}/all with the id of {}.", categoryId);
 
         return inventoryService.getAllProductByCategory(categoryId)
                 .thenApply(products -> {
                     logger.info("Received {} categories back from /inventory/low-stock.", products.size());
                     return products;
+                });
+    }
+
+    @PatchMapping("/modify-name/{cat-id}")
+    public CompletableFuture<CategoryDto> modifyName(
+            @PathVariable("cat-id") Long categoryId,
+            @RequestBody @Valid ModifyNameDto modifyDto
+            ){
+        logger.info("Received request to /category/modify-name/{cat-id} with the id of {}.", categoryId);
+
+        return categoryService.modifyName(categoryId, modifyDto)
+                .thenApply(categoryDto -> {
+                    logger.info("Category(id:{}) successfully renamed to {}.", categoryDto, modifyDto.name());
+                    return categoryDto;
                 });
     }
 
