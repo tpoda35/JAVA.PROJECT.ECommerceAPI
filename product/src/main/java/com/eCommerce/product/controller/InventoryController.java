@@ -6,6 +6,8 @@ import com.eCommerce.product.dto.ModifyStockDto;
 import com.eCommerce.product.dto.ProductDto;
 import com.eCommerce.product.model.Product;
 import com.eCommerce.product.service.InventoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,10 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    //Gives back the low-stock products(under 5 stock).
+    @Operation(summary = "Gives back all the low-stock product(under 5 stock).")
+    @ApiResponse(responseCode = "404", description = "There's no low-stock product.")
+    @ApiResponse(responseCode = "200", description = "Found low-stock products.")
+    @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @GetMapping("/low-stock")
     public CompletableFuture<List<Product>> getLowStockProducts(){
         logger.info("Received request to /inventory/low-stock.");
@@ -42,7 +47,11 @@ public class InventoryController {
                 });
     }
 
-    //Modifies the given product stock.
+    @Operation(summary = "Modifies the given product stock.")
+    @ApiResponse(responseCode = "404", description = "Product not found.")
+    @ApiResponse(responseCode = "200", description = "Product stock successfully modified.")
+    @ApiResponse(responseCode = "400", description = "Invalid data.")
+    @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PatchMapping("/modify-stock/{prod-id}")
     public CompletableFuture<ProductDto> modifyStock(
             @PathVariable("prod-id") Long id,
@@ -58,7 +67,11 @@ public class InventoryController {
                 });
     }
 
-    //Modifies the given product name.
+    @Operation(summary = "Modifies the given product name.")
+    @ApiResponse(responseCode = "404", description = "Product not found.")
+    @ApiResponse(responseCode = "200", description = "Product name successfully modified.")
+    @ApiResponse(responseCode = "400", description = "Invalid data.")
+    @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PatchMapping("/modify-name/{prod-id}")
     public CompletableFuture<ProductDto> modifyName(
             @PathVariable("prod-id") Long id,
@@ -74,7 +87,10 @@ public class InventoryController {
                 });
     }
 
-    //Adds a new product to the database.
+    @Operation(summary = "Creates a new product.")
+    @ApiResponse(responseCode = "201", description = "Product successfully created.")
+    @ApiResponse(responseCode = "400", description = "Invalid data.")
+    @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PostMapping("/add")
     public CompletableFuture<ResponseEntity<Product>> addProduct(
             @RequestBody @Valid ProductDto productDto
@@ -91,7 +107,10 @@ public class InventoryController {
                 });
     }
 
-    //Deletes the product from the database.
+    @Operation(summary = "Deletes a product.")
+    @ApiResponse(responseCode = "404", description = "Product not found.")
+    @ApiResponse(responseCode = "204", description = "Product successfully deleted.")
+    @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @DeleteMapping("/delete/{prod-id}")
     public CompletableFuture<ResponseEntity<Void>> deleteProduct(
             @PathVariable("prod-id") Long id
@@ -106,6 +125,11 @@ public class InventoryController {
                 });
     }
 
+    @Operation(summary = "Modifies the given product categoryId.")
+    @ApiResponse(responseCode = "404", description = "Product not found.")
+    @ApiResponse(responseCode = "204", description = "Product categoryId successfully changed.")
+    @ApiResponse(responseCode = "400", description = "Invalid data.")
+    @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PatchMapping("/modifyProductCatId/{prod-id}")
     public CompletableFuture<ProductDto> modifyProductCatId(
             @PathVariable("prod-id") Long id,
