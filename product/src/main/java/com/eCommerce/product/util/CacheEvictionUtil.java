@@ -11,8 +11,13 @@ public class CacheEvictionUtil {
     private static final Logger logger = LoggerFactory.getLogger(CacheEvictionUtil.class);
 
     @CacheEvict(value = "prodByCat", key = "#categoryId" )
-    public void evictCacheByCategory(Long categoryId){
-        logger.info("Evicting cache for category ID: {}", categoryId);
+    public void evictProdByCatCache(Long categoryId){
+        logger.info("Evicting cache 'prodByCat' for category ID: {}", categoryId);
+    }
+
+    @CacheEvict(value = "category", key = "#categoryId")
+    public void evictCategoryCache(Long categoryId){
+        logger.info("Evicting cache 'category' for category ID: {}", categoryId);
     }
 
 }
