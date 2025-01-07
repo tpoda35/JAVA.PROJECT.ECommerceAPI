@@ -7,6 +7,7 @@ import com.eCommerce.product.mapper.CategoryMapper;
 import com.eCommerce.product.model.Category;
 import com.eCommerce.product.repository.CategoryRepository;
 import com.eCommerce.product.service.CategoryService;
+import com.eCommerce.product.util.CacheEvictionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -28,10 +29,12 @@ public class CategoryServiceImpl implements CategoryService {
     private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final CategoryRepository categoryRepository;
+    private final CacheEvictionUtil cacheEvictionUtil;
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CacheEvictionUtil cacheEvictionUtil) {
         this.categoryRepository = categoryRepository;
+        this.cacheEvictionUtil = cacheEvictionUtil;
     }
 
     @Async
@@ -156,8 +159,29 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.INSTANCE.toDto(categoryRepository.save(category));
     }
 
+    @Async
+    @CacheEvict(
+            value = "categories",
+            allEntries = true
+    )
     @Override
     public CompletableFuture<Void> deleteCategory(Long id) {
-        return null;
+        try {
+            deleteCategoryTra(id);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e){
+            logger.error("Unexpected error during deleteCategory: {}", e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private void deleteCategoryTra(Long id){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found."));
+        logger.info("Deleting the category(id:{}).", id);
+
+        cacheEvictionUtil.evictCategoryCache(category.getId());
+        categoryRepository.delete(category);
     }
 }
