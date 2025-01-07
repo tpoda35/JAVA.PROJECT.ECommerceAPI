@@ -73,7 +73,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         Product product = inventoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
-        logger.info("Modifying the stock of the product with the id of {}", product.getId());
+        logger.info("Modifying the stock of the product(id:{}).", product.getId());
 
         product.setStock(newStock);
         return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
@@ -96,6 +96,7 @@ public class InventoryServiceImpl implements InventoryService {
         try {
             return CompletableFuture.completedFuture(modifyNameTra(id, newName));
         } catch (Exception e){
+            logger.error("Unexpected error during modifyProductName: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -104,7 +105,7 @@ public class InventoryServiceImpl implements InventoryService {
     private ProductDto modifyNameTra(Long id, String newName){
         Product product = inventoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
-        logger.info("Modifying the name of the product with the id of {}", product.getId());
+        logger.info("Modifying the name of the product(id:{}).", product.getId());
 
         product.setName(newName);
         return ProductMapper.INSTANCE.toDto(inventoryRepository.save(product));
@@ -126,6 +127,7 @@ public class InventoryServiceImpl implements InventoryService {
         try {
             return CompletableFuture.completedFuture(addProductTra(productDto));
         } catch (Exception e){
+            logger.error("Unexpected error during addProduct: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -146,6 +148,7 @@ public class InventoryServiceImpl implements InventoryService {
             deleteProductTra(id);
             return CompletableFuture.completedFuture(null);
         } catch (Exception e){
+            logger.error("Unexpected error during deleteProduct: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -154,7 +157,7 @@ public class InventoryServiceImpl implements InventoryService {
     private void deleteProductTra(Long id){
         Product product = inventoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
-        logger.info("Deleting the product with the id of {}.", id);
+        logger.info("Deleting the product(id:{}).", id);
 
         cacheEvictionUtil.evictCacheByCategory(product.getCategoryId());
         inventoryRepository.delete(product);
@@ -195,6 +198,7 @@ public class InventoryServiceImpl implements InventoryService {
         try {
             return CompletableFuture.completedFuture(modifyProductCatIdTra(productId, newId));
         } catch (Exception e){
+            logger.error("Unexpected error during modifyProductCatId: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -203,7 +207,7 @@ public class InventoryServiceImpl implements InventoryService {
     private ProductDto modifyProductCatIdTra(Long productId, Long newId){
         Product product = inventoryRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
-        logger.info("Modifying categoryId({}) of the product with the id of {}.",
+        logger.info("Modifying categoryId({}) of the product(id:{}).",
                 product.getCategoryId(), productId);
 
         product.setCategoryId(newId);
