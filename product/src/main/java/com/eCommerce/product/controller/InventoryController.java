@@ -53,7 +53,7 @@ public class InventoryController {
     @ApiResponse(responseCode = "400", description = "Invalid data.")
     @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PatchMapping("/modify-stock/{prod-id}")
-    public CompletableFuture<ProductDto> modifyStock(
+    public CompletableFuture<ProductDto> modifyProductStock(
             @PathVariable("prod-id") Long id,
             @RequestBody @Valid ModifyStockDto modifyDto
             ){
@@ -73,7 +73,7 @@ public class InventoryController {
     @ApiResponse(responseCode = "400", description = "Invalid data.")
     @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PatchMapping("/modify-name/{prod-id}")
-    public CompletableFuture<ProductDto> modifyName(
+    public CompletableFuture<ProductDto> modifyProductName(
             @PathVariable("prod-id") Long id,
             @RequestBody @Valid ModifyNameDto modifyDto
     ){
@@ -127,7 +127,7 @@ public class InventoryController {
 
     @Operation(summary = "Modifies the given product categoryId.")
     @ApiResponse(responseCode = "404", description = "Product not found.")
-    @ApiResponse(responseCode = "204", description = "Product categoryId successfully changed.")
+    @ApiResponse(responseCode = "200", description = "Product categoryId successfully changed.")
     @ApiResponse(responseCode = "400", description = "Invalid data.")
     @ApiResponse(responseCode = "500", description = "Internal server error occurred.")
     @PatchMapping("/modifyProductCatId/{prod-id}")
