@@ -159,7 +159,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found."));
         logger.info("Deleting the product(id:{}).", id);
 
-        cacheEvictionUtil.evictCacheByCategory(product.getCategoryId());
+        cacheEvictionUtil.evictProdByCatCache(product.getCategoryId());
         inventoryRepository.delete(product);
     }
 
