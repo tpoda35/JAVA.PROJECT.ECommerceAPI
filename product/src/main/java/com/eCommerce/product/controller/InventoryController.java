@@ -57,12 +57,12 @@ public class InventoryController {
             @PathVariable("prod-id") Long id,
             @RequestBody @Valid ModifyStockDto modifyDto
             ){
-        logger.info("Received request to /inventory/modify-stock/prod-id with the id: {}, and stock: {}",
+        logger.info("Received request to /inventory/modify-stock/{prod-id} with the id: {}, and stock: {}",
                 id, modifyDto.num());
 
         return inventoryService.modifyProductStock(id, modifyDto.num())
                 .thenApply(result -> {
-                    logger.info("A product stock has been modified.");
+                    logger.info("A product(id:{}) stock has been modified to {}.", id, modifyDto.num());
                     return result;
                 });
     }
@@ -77,12 +77,12 @@ public class InventoryController {
             @PathVariable("prod-id") Long id,
             @RequestBody @Valid ModifyNameDto modifyDto
     ){
-        logger.info("Received request to /inventory/modify-name/prod-id with the id: {}, and name: {}",
+        logger.info("Received request to /inventory/modify-name/{prod-id} with the id: {}, and name: {}",
                 id, modifyDto.name());
 
         return inventoryService.modifyProductName(id, modifyDto.name())
                 .thenApply(productDto -> {
-                    logger.info("A product name with the id of {} has been modified.", id);
+                    logger.info("A product(id:{}) name has been modified to {}.", id, modifyDto.name());
                     return productDto;
                 });
     }
@@ -101,7 +101,7 @@ public class InventoryController {
         return inventoryService.addProduct(productDto)
                 .thenApply(product ->
                 {
-                    logger.info("A product has been added with the id of {}.", product.getId());
+                    logger.info("A product(id:{}) has been created..", product.getId());
                     return ResponseEntity.created(URI.create("/inventory/" + product.getId()))
                             .body(product);
                 });
@@ -120,7 +120,7 @@ public class InventoryController {
 
         return inventoryService.deleteProduct(id)
                 .thenApply(result -> {
-                    logger.info("A product has been deleted with the id of {}.", id);
+                    logger.info("A product(id:{}) has been deleted.", id);
                     return ResponseEntity.noContent().build();
                 });
     }
@@ -140,7 +140,7 @@ public class InventoryController {
 
         return inventoryService.modifyProductCatId(id, modifyDto.id())
                 .thenApply( productDto -> {
-                    logger.info("A product categoryId with the id of {} has been modified.", id);
+                    logger.info("A product(id:{}) categoryId has been modified.", id);
                     return productDto;
                 });
     }
