@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
             );
         }
         Category cat = category.get();
-        logger.info("Category found with the name of {}, and id of {}.", cat.getName(), id);
+        logger.info("Category(id:{}) found with the name of {}.", id, cat.getName());
 
         return CompletableFuture.completedFuture(cat);
     }
@@ -78,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             return CompletableFuture.completedFuture(addCategoryTra(categoryDto));
         } catch (Exception e){
+            logger.error("Unexpected error during addCategory: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -103,16 +104,17 @@ public class CategoryServiceImpl implements CategoryService {
             )
     })
     @Override
-    public CompletableFuture<CategoryDto> modifyName(Long id, ModifyNameDto modifyDto) {
+    public CompletableFuture<CategoryDto> modifyCategoryName(Long id, ModifyNameDto modifyDto) {
         try{
-            return CompletableFuture.completedFuture(modifyNameTra(id, modifyDto));
+            return CompletableFuture.completedFuture(modifyCategoryNameTra(id, modifyDto));
         } catch (Exception e){
+            logger.error("Unexpected error during modifyCategoryName: {}", e.getMessage());
             return CompletableFuture.failedFuture(e);
         }
     }
 
     @Transactional
-    private CategoryDto modifyNameTra(Long id, ModifyNameDto modifyDto){
+    private CategoryDto modifyCategoryNameTra(Long id, ModifyNameDto modifyDto){
         logger.info("Modifying category(id:{}) name to: {}", id, modifyDto.name());
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category with the id of " + id + "not found"));
@@ -121,9 +123,37 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.INSTANCE.toDto(categoryRepository.save(category));
     }
 
+    @Async
+    @Caching(evict = {
+            @CacheEvict(
+                    cacheNames = "categories",
+                    allEntries = true,
+                    condition = "#result != null"
+            ),
+            @CacheEvict(
+                    cacheNames = "category",
+                    key = "#id",
+                    condition = "#result != null"
+            )
+    })
     @Override
-    public CompletableFuture<Void> modifyDescription(Long id, ModifyDescriptionDto modifyDto) {
-        return null;
+    public CompletableFuture<CategoryDto> modifyCategoryDescription(Long id, ModifyDescriptionDto modifyDto) {
+        try {
+            return CompletableFuture.completedFuture(modifyCategoryDescriptionTra(id, modifyDto));
+        } catch (Exception e){
+            logger.error("Unexpected error during modifyCategoryDescription: {}", e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Transactional
+    private CategoryDto modifyCategoryDescriptionTra(Long id, ModifyDescriptionDto modifyDto){
+        logger.info("Modifying category(id:{}) description to: {}", id, modifyDto.description());
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category with the id of " + id + "not found"));
+
+        category.setDescription(modifyDto.description());
+        return CategoryMapper.INSTANCE.toDto(categoryRepository.save(category));
     }
 
     @Override

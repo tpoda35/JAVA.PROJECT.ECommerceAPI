@@ -80,13 +80,13 @@ public class CategoryController {
     }
 
     @PatchMapping("/modify-name/{cat-id}")
-    public CompletableFuture<CategoryDto> modifyName(
+    public CompletableFuture<CategoryDto> modifyCategoryName(
             @PathVariable("cat-id") Long categoryId,
             @RequestBody @Valid ModifyNameDto modifyDto
             ){
         logger.info("Received request to /category/modify-name/{cat-id} with the id of {}.", categoryId);
 
-        return categoryService.modifyName(categoryId, modifyDto)
+        return categoryService.modifyCategoryName(categoryId, modifyDto)
                 .thenApply(categoryDto -> {
                     logger.info("Category(id:{}) successfully renamed to {}.", categoryDto, modifyDto.name());
                     return categoryDto;
