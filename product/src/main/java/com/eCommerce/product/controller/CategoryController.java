@@ -133,5 +133,19 @@ public class CategoryController {
                 });
     }
 
+    @DeleteMapping("/delete/{cat-id}")
+    public CompletableFuture<ResponseEntity<Void>> deleteCategory(
+            @PathVariable("cat-id") Long id
+    ) {
+        logger.info("Received request to /category/delete/{cat-id} with the id of {}.", id);
+
+        return categoryService.deleteCategory(id)
+                .thenApply(aVoid -> {
+                    logger.info("Category(id:{}) description successfully deleted.",
+                            id);
+                    return ResponseEntity.noContent().build();
+                });
+    }
+
     
 }
