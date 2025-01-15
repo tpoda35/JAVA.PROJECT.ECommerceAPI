@@ -10,6 +10,7 @@ import com.eCommerce.product.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +23,13 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/category")
+@RequiredArgsConstructor
 public class CategoryController {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     private final CategoryService categoryService;
     private final InventoryService inventoryService;
-
-    @Autowired
-    public CategoryController(CategoryService categoryService, InventoryService inventoryService) {
-        this.categoryService = categoryService;
-        this.inventoryService = inventoryService;
-    }
 
     @Operation(summary = "Gives back all the category.")
     @ApiResponse(responseCode = "404", description = "There's no existing category.")
@@ -137,4 +133,5 @@ public class CategoryController {
                 });
     }
 
+    
 }

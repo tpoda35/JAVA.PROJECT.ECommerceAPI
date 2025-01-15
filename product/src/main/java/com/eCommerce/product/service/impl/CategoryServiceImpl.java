@@ -10,6 +10,7 @@ import com.eCommerce.product.service.CategoryService;
 import com.eCommerce.product.util.CacheEvictionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +25,13 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final CategoryRepository categoryRepository;
     private final CacheEvictionUtil cacheEvictionUtil;
-
-    @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CacheEvictionUtil cacheEvictionUtil) {
-        this.categoryRepository = categoryRepository;
-        this.cacheEvictionUtil = cacheEvictionUtil;
-    }
 
     @Async
     @Cacheable(value = "categories")

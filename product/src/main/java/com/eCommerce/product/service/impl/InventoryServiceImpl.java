@@ -8,6 +8,7 @@ import com.eCommerce.product.service.InventoryService;
 import com.eCommerce.product.util.CacheEvictionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +22,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final CacheEvictionUtil cacheEvictionUtil;
     private static final Logger logger = LoggerFactory.getLogger(InventoryServiceImpl.class);
-
-    @Autowired
-    public InventoryServiceImpl(InventoryRepository inventoryRepository, CacheEvictionUtil cacheEvictionUtil) {
-        this.inventoryRepository = inventoryRepository;
-        this.cacheEvictionUtil = cacheEvictionUtil;
-    }
 
     @Async
     @Cacheable(value = "low-stock")

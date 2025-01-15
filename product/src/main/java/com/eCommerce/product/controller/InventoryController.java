@@ -9,6 +9,7 @@ import com.eCommerce.product.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +22,12 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/inventory")
+@RequiredArgsConstructor
 public class InventoryController {
 
     private static final Logger logger = LoggerFactory.getLogger(InventoryController.class);
 
     private final InventoryService inventoryService;
-
-    @Autowired
-    public InventoryController(InventoryService inventoryService) {
-        this.inventoryService = inventoryService;
-    }
 
     @Operation(summary = "Gives back all the low-stock product(under 5 stock).")
     @ApiResponse(responseCode = "404", description = "There's no low-stock product.")
